@@ -44,10 +44,7 @@ def json_file_to_dict(config_file: str) -> dict|None:
 def replace_if_invalid(value: str, replacement: str, pattern: str|re.Pattern[str]) -> str:
   """Returns original value if valid, fallback value if invalid"""
 
-  if re.match(pattern, value):
-    return value
-  else:
-    return replacement
+  return value if re.match(pattern, value) else replacement
 
 def check_and_replace_config(config_file: str, target_file: str = None):
   """Checks given file for invalid values. Replaces those with fallback values (default: overwrites file)."""
