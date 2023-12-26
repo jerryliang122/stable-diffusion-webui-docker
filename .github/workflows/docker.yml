@@ -1,24 +1,55 @@
-name: Build Images
-
-on:
+name: docker build
+on: 
   push:
-    branches: master
-  pull_request:
-      paths:
-        - docker-compose.yml
-        - services
+    branches: [master]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        profile:
-          - auto
-          - invoke
-          - comfy
-          - download
+  gd:
     runs-on: ubuntu-latest
-    name: ${{ matrix.profile }}
     steps:
-      - uses: actions/checkout@v3
-      - run: docker compose --profile ${{ matrix.profile }} build --progress plain
+    - name: Enable BBR congestion control
+      run: |
+        sudo modprobe tcp_bbr
+        echo "tcp_bbr" | sudo tee -a /etc/modules
+        echo "net.core.default_qdisc = fq" | sudo tee -a /etc/sysctl.conf
+        echo "net.ipv4.tcp_congestion_control = bbr" | sudo tee -a /etc/sysctl.conf
+        sudo sysctl -p
+
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true   
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # 设置 QEMU, 后面 docker buildx 依赖此.
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    # 设置 Docker Buildx, 方便构建 Multi platform 镜像
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # 登录腾讯docker
+    - name: Login to Tencent docker
+      uses: docker/login-action@v3
+      with:
+        registry: registry.cn-shanghai.aliyuncs.com
+        username: ${{ secrets.DOCKERHUB_USERNAME_ALIY }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+    # 构建镜像, 并打 tag
+    - name: Build docker image
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        context: .
+        tags: registry.cn-shanghai.aliyuncs.com/jerryliang/chatglm3:latest
+        opt: compression=estargz
