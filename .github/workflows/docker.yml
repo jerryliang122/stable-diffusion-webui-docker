@@ -51,5 +51,5 @@ jobs:
       with:
         push: true
         context: .
-        tags: registry.cn-shanghai.aliyuncs.com/jerryliang/chatglm3:latest
+        tags: registry.cn-shanghai.aliyuncs.com/jerryliang/stable_diffusion:latest
         opt: compression=estargz
