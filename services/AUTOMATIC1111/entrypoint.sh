@@ -1,6 +1,4 @@
 #!/bin/bash
-ln -s /mnt/data /data
-
 set -Eeuo pipefail
 
 # TODO: move all mkdir -p ?
