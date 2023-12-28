@@ -51,4 +51,4 @@ jobs:
       with:
         push: true
         context: services/AUTOMATIC1111/
-        tags: registry.cn-shanghai.aliyuncs.com/jerryliang/stable_diffusion:latest
+        tags: registry.cn-shanghai.aliyuncs.com/jerryliang/stable_diffusion:aly
