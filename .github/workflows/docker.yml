@@ -1,7 +1,7 @@
 name: docker build
 on: 
   push:
-    branches: [master]
+    branches: [aly]
 
 jobs:
   gd:
